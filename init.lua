@@ -86,6 +86,7 @@ minetest.register_node("shop:shop", {
 		local pinv = sender:get_inventory()
 
 		if fields.next then
+			print("It was next.")
 			if pg_total < 32 and
 					pg_current == pg_total and
 					player == owner and
@@ -103,15 +104,15 @@ minetest.register_node("shop:shop", {
 				end
 				meta:set_string("formspec", get_shop_formspec(node_pos, meta:get_int("pages_current")))
 			end
-
-			if fields.next then
-				print("It was next.")
-			elseif fields.prev then
-				print("It was prev.")
+		elseif fields.prev then
+			print("It was prev.")
+			if pg_current == 1 and pg_total > 1 then
+				meta:set_int("pages_current", pg_total)
+			elseif pg_current > 1 then
+				meta:set_int("pages_current", pg_current - 1)
 			end
-		end
-
-		if fields.register then
+			meta:set_string("formspec", get_shop_formspec(node_pos, meta:get_int("pages_current")))
+		elseif fields.register then
 			if player ~= owner and (not minetest.check_player_privs(player, "shop_admin")) then
 				minetest.chat_send_player(player, "Only the shop owner can open the register.")
 				return
