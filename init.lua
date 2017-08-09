@@ -86,7 +86,7 @@ minetest.register_node("shop:shop", {
 		local pinv = sender:get_inventory()
 
 		if fields.next then
-			print("It was next.")
+			--print("It was next.")
 			if pg_total < 32 and
 					pg_current == pg_total and
 					player == owner and
@@ -105,7 +105,7 @@ minetest.register_node("shop:shop", {
 				meta:set_string("formspec", get_shop_formspec(node_pos, meta:get_int("pages_current")))
 			end
 		elseif fields.prev then
-			print("It was prev.")
+			--print("It was prev.")
 			if pg_current == 1 and pg_total > 1 then
 				meta:set_int("pages_current", pg_total)
 			elseif pg_current > 1 then
@@ -143,13 +143,13 @@ minetest.register_node("shop:shop", {
 				inv:remove_item("stock", s[1])
 				pinv:add_item("main", s[1])
 			else
-				print("exception")
+				--print("exception")
 				if not inv:contains_item("stock", s[1]) then
-					print("-> no stock?")
+					--print("-> no stock?")
 					minetest.chat_send_player(player, "Out of stock!")
 				end
 				if not pinv:contains_item("main", b[1]) then
-					print("-> no funds?")
+					--print("-> no funds?")
 					minetest.chat_send_player(player, "Not enough credits!")
 				end
 			end
