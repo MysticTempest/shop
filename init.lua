@@ -68,6 +68,7 @@ minetest.register_node("shop:shop", {
 		meta:set_string("owner", owner)
 		meta:set_string("infotext", "Shop (Owned by " .. owner .. ")")
 		meta:set_string("formspec", get_shop_formspec(pos, 1))
+		meta:set_string("admin_shop", "false")
 		meta:set_int("pages_current", 1)
 		meta:set_int("pages_total", 1)
 
@@ -76,6 +77,16 @@ minetest.register_node("shop:shop", {
 		inv:set_size("sell1", 1)
 		inv:set_size("stock", 8*4)
 		inv:set_size("register", 8*4)
+	end,
+	on_key_use = function(pos, player)
+		local meta = minetest.get_meta(pos)
+		if meta:get_string("admin_shop") == "false" then
+			minetest.chat_send_player(player:get_player_name(), "Enabling infinite stocks in shop.")
+			meta:set_string("admin_shop", "true")
+		elseif meta:get_string("admin_shop") == "true" then
+			minetest.chat_send_player(player:get_player_name(), "Disabling infinite stocks in shop.")
+			meta:set_string("admin_shop", "false")
+		end
 	end,
 	on_receive_fields = function(pos, formname, fields, sender)
 		local meta = minetest.get_meta(pos)
@@ -90,6 +101,7 @@ minetest.register_node("shop:shop", {
 		local reg = inv:get_list("register")
 		local player = sender:get_player_name()
 		local pinv = sender:get_inventory()
+		local admin_shop = meta:get_string("admin_shop")
 
 		if fields.next then
 			--print("It was next.")
@@ -146,7 +158,9 @@ minetest.register_node("shop:shop", {
 					pinv:room_for_item("main", s[1]) then
 				pinv:remove_item("main", b[1])
 				inv:add_item("register", b[1])
-				inv:remove_item("stock", s[1])
+				if admin_shop == "false" then
+					inv:remove_item("stock", s[1])
+				end
 				pinv:add_item("main", s[1])
 			else
 				--print("exception")
