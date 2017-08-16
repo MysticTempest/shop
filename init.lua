@@ -1,3 +1,9 @@
+-- `Shop' mod for Minetest/DCBL
+-- Copyright 2017 James Stevenson
+-- Licensed GNU General Public License 3
+-- (Or higher, as you please.)
+-- minetest.net
+
 local function get_shop_formspec(pos, p)
 	local meta = minetest.get_meta(pos)
 	local spos = pos.x.. "," ..pos.y .. "," .. pos.z
@@ -212,12 +218,21 @@ minetest.register_craftitem("shop:coin", {
 	inventory_image = "shop_coin.png",
 })
 
+minetest.clear_craft({recipe={{"default:gold_ingot"}}})
 minetest.register_craft({
 	output = "shop:coin 9",
 	recipe = {
 		{"default:gold_ingot"},
 	}
 })
+---[[
+minetest.register_craft({
+	output = "default:skeleton_key",
+	recipe = {
+		{"default:gold_ingot", "default:gold_ingot"},
+	}
+})
+--]]
 
 minetest.register_craft({
 	output = "default:gold_ingot",
