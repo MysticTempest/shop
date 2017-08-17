@@ -145,6 +145,7 @@ minetest.register_node("shop:shop", {
 				minetest.show_formspec(player, "shop:shop", formspec_stock)
 			end
 		elseif fields.ok then
+			-- Shop's closed if not set up, or the till is full.
 			if inv:is_empty("sell" .. pg_current) or
 			    inv:is_empty("buy" .. pg_current) or
 			    (not inv:room_for_item("register", b[1])) then
@@ -152,26 +153,28 @@ minetest.register_node("shop:shop", {
 				return
 			end
 
-			if (pinv:contains_item("main", b[1]) or
-					pinv:contains_item("funds", b[1])) and --?
-					inv:contains_item("stock", s[1]) and
-					pinv:room_for_item("main", s[1]) then
-				pinv:remove_item("main", b[1])
-				inv:add_item("register", b[1])
-				if admin_shop == "false" then
-					inv:remove_item("stock", s[1])
+			-- Player has funds.
+			if pinv:contains_item("main", b[1]) then
+				-- Player has space for the goods.
+				if pinv:room_for_item("main", s[1]) then
+					-- There's inventory in stock.
+					if inv:contains_item("stock", s[1]) then
+						pinv:remove_item("main", b[1]) -- Take the funds.
+						inv:add_item("register", b[1]) -- Fill the till.
+						inv:remove_item("stock", s[1]) -- Take one from the stock.
+						pinv:add_item("main", s[1]) -- Give it to the player.
+					elseif admin_shop == "true" then
+						pinv:remove_item("main", b[1])
+						inv:add_item("register", b[1])
+						pinv:add_item("main", s[1])
+					else
+						minetest.chat_send_player(player, "Shop is out of inventory!")
+					end
+				else
+					minetest.chat_send_player(player, "You're all filled up!")
 				end
-				pinv:add_item("main", s[1])
 			else
-				--print("exception")
-				if not inv:contains_item("stock", s[1]) then
-					--print("-> no stock?")
-					minetest.chat_send_player(player, "Out of stock!")
-				end
-				if not pinv:contains_item("main", b[1]) then
-					--print("-> no funds?")
-					minetest.chat_send_player(player, "Not enough credits!")
-				end
+				minetest.chat_send_player(player, "Not enough credits!") -- 32X.
 			end
 		end
 	end,
