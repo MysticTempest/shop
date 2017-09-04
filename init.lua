@@ -4,6 +4,14 @@
 -- (Or higher, as you please.)
 -- minetest.net
 
+local output = function(name, message)
+	minetest.chat_send_player(name, message)
+end
+
+if minetest.global_exists("dcbl") then
+	output = dcbl.output
+end
+
 local function get_shop_formspec(pos, p)
 	local meta = minetest.get_meta(pos)
 	local spos = pos.x.. "," ..pos.y .. "," .. pos.z
@@ -81,10 +89,10 @@ minetest.register_node("shop:shop", {
 	on_key_use = function(pos, player)
 		local meta = minetest.get_meta(pos)
 		if meta:get_string("admin_shop") == "false" then
-			minetest.chat_send_player(player:get_player_name(), "Enabling infinite stocks in shop.")
+			output(player:get_player_name(), "Enabling infinite stocks in shop.")
 			meta:set_string("admin_shop", "true")
 		elseif meta:get_string("admin_shop") == "true" then
-			minetest.chat_send_player(player:get_player_name(), "Disabling infinite stocks in shop.")
+			output(player:get_player_name(), "Disabling infinite stocks in shop.")
 			meta:set_string("admin_shop", "false")
 		end
 	end,
@@ -132,14 +140,14 @@ minetest.register_node("shop:shop", {
 			meta:set_string("formspec", get_shop_formspec(node_pos, meta:get_int("pages_current")))
 		elseif fields.register then
 			if player ~= owner and (not minetest.check_player_privs(player, "shop_admin")) then
-				minetest.chat_send_player(player, "Only the shop owner can open the register.")
+				output(player, "Only the shop owner can open the register.")
 				return
 			else
 				minetest.show_formspec(player, "shop:shop", formspec_register)
 			end
 		elseif fields.stock then
 			if player ~= owner and (not minetest.check_player_privs(player, "shop_admin")) then
-				minetest.chat_send_player(player, "Only the shop owner can open the stock.")
+				output(player, "Only the shop owner can open the stock.")
 				return
 			else
 				minetest.show_formspec(player, "shop:shop", formspec_stock)
@@ -149,7 +157,7 @@ minetest.register_node("shop:shop", {
 			if inv:is_empty("sell" .. pg_current) or
 			    inv:is_empty("buy" .. pg_current) or
 			    (not inv:room_for_item("register", b[1])) then
-				minetest.chat_send_player(player, "Shop closed.")
+				output(player, "Shop closed.")
 				return
 			end
 
@@ -168,13 +176,13 @@ minetest.register_node("shop:shop", {
 						inv:add_item("register", b[1])
 						pinv:add_item("main", s[1])
 					else
-						minetest.chat_send_player(player, "Shop is out of inventory!")
+						output(player, "Shop is out of inventory!")
 					end
 				else
-					minetest.chat_send_player(player, "You're all filled up!")
+					output(player, "You're all filled up!")
 				end
 			else
-				minetest.chat_send_player(player, "Not enough credits!") -- 32X.
+				output(player, "Not enough credits!") -- 32X.
 			end
 		end
 	end,
