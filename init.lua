@@ -152,17 +152,22 @@ minetest.register_node("shop:shop", {
 		elseif fields.prev then
 			if pg_total > 1 then
 				if inv:is_empty("sell" .. pg_current) and inv:is_empty("buy" .. pg_current) then
-					--[[if pg_current ~= pg_total then
+					if pg_current == pg_total then
+						meta:set_int("pages_total", pg_total - 1)
+						print("Set pages_total to " .. pg_total - 1)
+					else
 						for i  = pg_current, pg_total do
 							inv:set_list("buy" .. i, inv:get_list("buy" .. i + 1))
 							inv:set_list("sell" .. i, inv:get_list("sell" .. i + 1))
+							inv:set_list("buy" .. i + 1, nil)
+							inv:set_list("sell" .. i + 1, nil)
 						end
-						print("Set lists.")
-					end]]
-					meta:set_int("pages_total", pg_total - 1)
-					print("Set pages_total to " .. pg_total - 1)
+						meta:set_int("pages_total", pg_total - 1)
+						pg_current = pg_current - 1
+						print("Set lists.", "Set pages_total to " .. pg_total - 1)
+					end
 				end
-				if pg_current == 1 and pg_total > 1 then
+				if pg_current == 1 and pg_total > 1 then -- Just what in the fuck is this?
 					meta:set_int("pages_current", pg_total)
 					print("Set pages_current to " .. pg_total)
 				elseif pg_current > 1 then
