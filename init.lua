@@ -120,14 +120,11 @@ minetest.register_node("shop:shop", {
 				inv:set_size("sell" .. pg_current + 1, 1)
 				meta:set_string("formspec", get_shop_formspec(node_pos, pg_current + 1))
 				meta:set_int("pages_current", pg_current + 1) 
-				print("Set pages_current to " .. pg_current + 1)
 				meta:set_int("pages_total", pg_current + 1)
-				print("Set pages_total to " .. pg_current + 1)
 			elseif pg_total > 1 then
 				if inv:is_empty("sell" .. pg_current) and inv:is_empty("buy" .. pg_current) then
 					if pg_current == pg_total then
 						meta:set_int("pages_total", pg_total - 1)
-						print("Set pages_total to " .. pg_total - 1)
 					else
 						for i = pg_current, pg_total do
 							inv:set_list("buy" .. i, inv:get_list("buy" .. i + 1))
@@ -137,15 +134,12 @@ minetest.register_node("shop:shop", {
 						end
 						meta:set_int("pages_total", pg_total - 1)
 						pg_current = pg_current - 1
-						print("Set lists.", "Set pages_total to " .. pg_total - 1)
 					end
 				end
 				if pg_current < pg_total then
 					meta:set_int("pages_current", pg_current + 1)
-					print("Set pages_current to " .. pg_current + 1)
 				else
 					meta:set_int("pages_current", 1)
-					print("Set pages_current to " .. 1)
 				end
 				meta:set_string("formspec", get_shop_formspec(node_pos, meta:get_int("pages_current")))
 			end
@@ -154,7 +148,6 @@ minetest.register_node("shop:shop", {
 				if inv:is_empty("sell" .. pg_current) and inv:is_empty("buy" .. pg_current) then
 					if pg_current == pg_total then
 						meta:set_int("pages_total", pg_total - 1)
-						print("Set pages_total to " .. pg_total - 1)
 					else
 						for i  = pg_current, pg_total do
 							inv:set_list("buy" .. i, inv:get_list("buy" .. i + 1))
@@ -164,15 +157,12 @@ minetest.register_node("shop:shop", {
 						end
 						meta:set_int("pages_total", pg_total - 1)
 						pg_current = pg_current + 1
-						print("Set lists.", "Set pages_total to " .. pg_total - 1)
 					end
 				end
 				if pg_current == 1 and pg_total > 1 then
 					meta:set_int("pages_current", pg_total)
-					print("Set pages_current to " .. pg_total)
 				elseif pg_current > 1 then
 					meta:set_int("pages_current", pg_current - 1)
-					print("Set pages_current to " .. pg_current - 1)
 				end
 				meta:set_string("formspec", get_shop_formspec(node_pos, meta:get_int("pages_current")))
 			end
