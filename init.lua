@@ -112,7 +112,6 @@ minetest.register_node("shop:shop", {
 		local admin_shop = meta:get_string("admin_shop")
 
 		if fields.next then
-			--print("It was next.")
 			if pg_total < 32 and
 					pg_current == pg_total and
 					player == owner and
@@ -123,6 +122,9 @@ minetest.register_node("shop:shop", {
 				meta:set_int("pages_current", pg_current + 1) 
 				meta:set_int("pages_total", pg_current + 1)
 			elseif pg_total > 1 then
+				if inv:is_empty("sell" .. pg_current) and inv:is_empty("buy" .. pg_current) then
+					meta:set_int("pages_total", pg_total - 1)
+				end
 				if pg_current < pg_total then
 					meta:set_int("pages_current", pg_current + 1)
 				else
@@ -131,13 +133,17 @@ minetest.register_node("shop:shop", {
 				meta:set_string("formspec", get_shop_formspec(node_pos, meta:get_int("pages_current")))
 			end
 		elseif fields.prev then
-			--print("It was prev.")
-			if pg_current == 1 and pg_total > 1 then
-				meta:set_int("pages_current", pg_total)
-			elseif pg_current > 1 then
-				meta:set_int("pages_current", pg_current - 1)
+			if pg_total > 1 then
+				if inv:is_empty("sell" .. pg_current) and inv:is_empty("buy" .. pg_current) then
+					meta:set_int("pages_total", pg_total - 1)
+				end
+				if pg_current == 1 and pg_total > 1 then
+					meta:set_int("pages_current", pg_total)
+				elseif pg_current > 1 then
+					meta:set_int("pages_current", pg_current - 1)
+				end
+				meta:set_string("formspec", get_shop_formspec(node_pos, meta:get_int("pages_current")))
 			end
-			meta:set_string("formspec", get_shop_formspec(node_pos, meta:get_int("pages_current")))
 		elseif fields.register then
 			if player ~= owner and (not minetest.check_player_privs(player, "shop_admin")) then
 				output(player, "Only the shop owner can open the register.")
