@@ -86,7 +86,10 @@ minetest.register_node("shop:shop", {
 		inv:set_size("stock", 8*4)
 		inv:set_size("register", 8*4)
 	end,
-	on_key_use = function(pos, player)
+	on_skeleton_key_use = function(pos, player)
+		if not minetest.check_player_privs(player, "shop_admin") then
+			return
+		end
 		local meta = minetest.get_meta(pos)
 		if meta:get_string("admin_shop") == "false" then
 			output(player:get_player_name(), "Enabling infinite stocks in shop.")
