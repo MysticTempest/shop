@@ -54,7 +54,11 @@ local formspec_stock =
 	"list[current_player;main;0,5.25;8,4;]" ..
 	"listring[]"
 
-minetest.register_privilege("shop_admin", "Shop administration and maintainence")
+minetest.register_privilege("shop_admin", {
+	description = "Shop administration and maintainence",
+	give_to_singleplayer = false,
+	give_to_admin = true,
+})
 
 minetest.register_node("shop:shop", {
 	description = "Shop",
