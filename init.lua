@@ -1,4 +1,4 @@
--- `Shop' mod for Minetest/DCBL
+-- `Shop' mod for Minetest
 -- Copyright 2017 James Stevenson
 -- Licensed GNU General Public License 3
 -- (Or higher, as you please.)
@@ -8,9 +8,6 @@ local output = function(name, message)
 	minetest.chat_send_player(name, message)
 end
 
-if minetest.global_exists("dcbl") then
-	output = dcbl.output
-end
 
 local function get_shop_formspec(pos, p)
 	local meta = minetest.get_meta(pos)
@@ -56,7 +53,7 @@ local formspec_stock =
 
 minetest.register_privilege("shop_admin", {
 	description = "Shop administration and maintainence",
-	give_to_singleplayer = false,
+	give_to_singleplayer = true,
 	give_to_admin = true,
 })
 
@@ -80,7 +77,7 @@ minetest.register_node("shop:shop", {
 		meta:set_string("owner", owner)
 		meta:set_string("infotext", "Shop (Owned by " .. owner .. ")")
 		meta:set_string("formspec", get_shop_formspec(pos, 1))
-		meta:set_string("admin_shop", "false")
+		meta:set_string("admin_shop", "true")
 		meta:set_int("pages_current", 1)
 		meta:set_int("pages_total", 1)
 
@@ -89,19 +86,6 @@ minetest.register_node("shop:shop", {
 		inv:set_size("sell1", 1)
 		inv:set_size("stock", 8*4)
 		inv:set_size("register", 8*4)
-	end,
-	on_skeleton_key_use = function(pos, player)
-		if not minetest.check_player_privs(player, "shop_admin") then
-			return
-		end
-		local meta = minetest.get_meta(pos)
-		if meta:get_string("admin_shop") == "false" then
-			output(player:get_player_name(), "Enabling infinite stocks in shop.")
-			meta:set_string("admin_shop", "true")
-		elseif meta:get_string("admin_shop") == "true" then
-			output(player:get_player_name(), "Disabling infinite stocks in shop.")
-			meta:set_string("admin_shop", "false")
-		end
 	end,
 	on_receive_fields = function(pos, formname, fields, sender)
 		local meta = minetest.get_meta(pos)
@@ -285,15 +269,7 @@ minetest.register_craft({
 		{"default:gold_ingot"},
 	}
 })
----[[
-minetest.register_craft({
-	output = "default:skeleton_key",
-	type = "shapeless",
-	recipe = {
-		"default:gold_ingot", "default:gold_ingot",
-	}
-})
---]]
+
 
 minetest.register_craft({
 	output = "default:gold_ingot",
